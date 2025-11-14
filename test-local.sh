@@ -15,9 +15,9 @@ if ! pg_isready -h localhost -p 5433 >/dev/null 2>&1; then
 fi
 
 # Check if test database exists, create if not
-if ! psql -h localhost -p 5433 -U postgres -l | grep -q kyucollect_test; then
+if ! psql -h localhost -p 5433 -U postgres -l | grep -q suji_test; then
     echo "📦 Creating test database..."
-    createdb -h localhost -p 5433 -U postgres kyucollect_test
+    createdb -h localhost -p 5433 -U postgres suji_test
 fi
 
 echo "🧪 Running E2E tests..."

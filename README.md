@@ -1,6 +1,6 @@
-# KyuCollect Backend API
+# SuJi Backend API
 
-Node.js/Express backend API for KyuCollect SaaS platform.
+Node.js/Express backend API for SuJi SaaS platform.
 
 ## Features
 
@@ -43,7 +43,7 @@ Node.js/Express backend API for KyuCollect SaaS platform.
 1. **Clone and navigate to backend directory**
 
    ```bash
-   cd kyucollect-backend
+   cd suji-backend
    ```
 
 2. **Install dependencies**

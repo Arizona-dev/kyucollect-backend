@@ -1,4 +1,4 @@
-# KyuCollect Backend - Local Development Setup
+# SuJi Backend - Local Development Setup
 
 This Docker Compose setup provides PostgreSQL and Redis for local development.
 
@@ -33,7 +33,7 @@ This Docker Compose setup provides PostgreSQL and Redis for local development.
 
   - Username: `postgres`
   - Password: `password`
-  - Database: `kyucollect`
+  - Database: `suji`
 
 - **Redis 7**: Cache on port 6379
 
@@ -78,11 +78,11 @@ docker-compose -f docker-compose.test.yml down
 
 ### Local E2E Tests
 
-For local testing without Docker, ensure PostgreSQL is running on port 5432 with the `kyucollect_test` database.
+For local testing without Docker, ensure PostgreSQL is running on port 5432 with the `suji_test` database.
 
 ```bash
 # Create test database
-createdb kyucollect_test
+createdb suji_test
 
 # Run tests
 pnpm run test:e2e

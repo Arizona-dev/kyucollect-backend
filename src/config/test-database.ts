@@ -11,7 +11,7 @@ import { Discount } from '../entities/payments/Discount';
 import { AuditLog } from '../entities/audit/AuditLog';
 
 // Generate unique database name for each test run to avoid enum conflicts
-const uniqueDbName = `kyucollect_test_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+const uniqueDbName = `suji_test_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
 export const TestDataSource = new DataSource({
   type: 'postgres',

@@ -15,7 +15,7 @@ process.env.TEST_DB_HOST = process.env.TEST_DB_HOST || 'localhost'; // Use local
 process.env.TEST_DB_PORT = process.env.TEST_DB_PORT || '5432';
 process.env.TEST_DB_USERNAME = process.env.TEST_DB_USERNAME || 'postgres';
 process.env.TEST_DB_PASSWORD = process.env.TEST_DB_PASSWORD || 'password';
-process.env.TEST_DB_NAME = process.env.TEST_DB_NAME || 'kyucollect_test';
+process.env.TEST_DB_NAME = process.env.TEST_DB_NAME || 'suji_test';
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret-key-for-testing-only';
 process.env.JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
 

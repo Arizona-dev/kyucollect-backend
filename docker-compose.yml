@@ -1,25 +1,25 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: kyucollect_postgres
+    container_name: suji_postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: kyucollect
+      POSTGRES_DB: suji
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d kyucollect"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d suji"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    container_name: kyucollect_redis
+    container_name: suji_redis
     ports:
       - "6379:6379"
     volumes:
@@ -34,7 +34,7 @@ services:
   # Optional: Uncomment if you want to run the app in Docker
   # app:
   #   build: .
-  #   container_name: kyucollect_app
+  #   container_name: suji_app
   #   ports:
   #     - "3000:3000"
   #   environment:
@@ -43,7 +43,7 @@ services:
   #     - DB_PORT=5432
   #     - DB_USERNAME=postgres
   #     - DB_PASSWORD=password
-  #     - DB_NAME=kyucollect
+  #     - DB_NAME=suji
   #     - REDIS_URL=redis://redis:6379
   #     - JWT_SECRET=your-super-secret-jwt-key-here
   #   depends_on:

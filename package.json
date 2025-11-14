@@ -1,7 +1,7 @@
 {
-  "name": "kyucollect-backend",
+  "name": "suji-backend",
   "version": "1.0.0",
-  "description": "KyuCollect Backend API",
+  "description": "SuJi Backend API",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -21,13 +21,13 @@
     "docker:clean": "docker-compose down -v"
   },
   "keywords": [
-    "kyucollect",
+    "suji",
     "backend",
     "api",
     "express",
     "postgresql"
   ],
-  "author": "KyuCollect Team",
+  "author": "SuJi Team",
   "license": "ISC",
   "packageManager": "pnpm@10.15.0",
   "dependencies": {

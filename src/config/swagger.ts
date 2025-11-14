@@ -4,12 +4,12 @@ import swaggerUi from "swagger-ui-express";
 const swaggerDefinition = {
   openapi: "3.0.0",
   info: {
-    title: "KyuCollect API",
+    title: "SuJi API",
     version: "1.0.0",
-    description: "API documentation for KyuCollect - Food Collection Platform",
+    description: "API documentation for SuJi - Food Collection Platform",
     contact: {
-      name: "KyuCollect Team",
-      email: "support@kyucollect.com",
+      name: "SuJi Team",
+      email: "support@suji.com",
     },
   },
   servers: [

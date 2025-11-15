@@ -3,19 +3,32 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { Menu } from "../menus/Menu";
 import { Order } from "../orders/Order";
+import { User } from "../auth/User";
 
 @Entity("stores")
 export class Store {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
+  @Column({ nullable: true })
+  ownerId?: string;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: "ownerId" })
+  owner?: User;
+
   @Column()
   name!: string;
+
+  @Column({ unique: true, nullable: true })
+  slug?: string;
 
   @Column({ nullable: true })
   description?: string;

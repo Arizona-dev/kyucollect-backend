@@ -113,6 +113,27 @@ export class StoresService {
     });
   }
 
+  async getStoreBySlug(slug: string): Promise<Store | null> {
+    return await this.storeRepository.findOne({
+      where: { slug },
+      select: [
+        "id",
+        "name",
+        "slug",
+        "description",
+        "address",
+        "phone",
+        "email",
+        "openingHours",
+        "timezone",
+        "isHoliday",
+        "holidayMessage",
+        "isActive",
+        "createdAt",
+      ],
+    });
+  }
+
   async updateStore(id: string, request: UpdateStoreRequest): Promise<Store> {
     const store = await this.storeRepository.findOne({
       where: { id, isActive: true },

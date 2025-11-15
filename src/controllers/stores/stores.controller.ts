@@ -60,6 +60,32 @@ export class StoresController {
     }
   }
 
+  async getStoreBySlug(req: Request, res: Response): Promise<void> {
+    try {
+      const { slug } = req.params;
+
+      const store = await this.storesService.getStoreBySlug(slug);
+
+      if (!store) {
+        res.status(404).json({
+          message: "Store not found",
+        });
+        return;
+      }
+
+      res.json({
+        message: "Store retrieved successfully",
+        data: store,
+      });
+    } catch (error) {
+      logger.error("Get store by slug error:", error);
+      res.status(500).json({
+        message: "Failed to retrieve store",
+        error: error instanceof Error ? error.message : "Internal server error",
+      });
+    }
+  }
+
   async createStore(req: Request, res: Response): Promise<void> {
     try {
       const errors = validationResult(req);

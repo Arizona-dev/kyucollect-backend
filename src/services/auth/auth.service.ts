@@ -6,6 +6,7 @@ import { User, UserRole, UserType } from "../../entities/auth/User";
 import { Store } from "../../entities/stores/Store";
 import { AuditService } from "../audit/audit.service";
 import { logger } from "../../utils/logger";
+import { createSlug } from "../../utils/slug";
 
 export interface AuthResponse {
   token: string;
@@ -241,7 +242,9 @@ export class AuthService {
 
     // Create store with initial business info
     const store = this.storeRepository.create({
+      ownerId: savedUser.id,
       name: storeName,
+      slug: createSlug(storeName),
       legalBusinessName: businessName,
       legalBusinessType: businessType,
       legalAddress: businessAddress,
@@ -335,5 +338,109 @@ export class AuthService {
     } catch (error) {
       return null;
     }
+  }
+
+  async completeOnboarding(userId: string, data: {
+    phoneNumber: string;
+    storeName: string;
+    siret: string;
+    storeAddress: {
+      street: string;
+      city: string;
+      postalCode: string;
+      country: string;
+    };
+    billingAddress: {
+      street: string;
+      city: string;
+      postalCode: string;
+      country: string;
+    };
+    acceptedCGU: boolean;
+    acceptedCGUAt: string;
+  }): Promise<{ user: Partial<User>; store: Partial<Store> }> {
+    // Get the user
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Update user with merchant data
+    user.ownerPhone = data.phoneNumber;
+    user.businessAddress = data.storeAddress;
+    user.countrySpecificFields = {
+      ...user.countrySpecificFields,
+      siret: data.siret,
+    };
+    user.acceptedTerms = data.acceptedCGU;
+    user.termsAcceptedAt = data.acceptedCGU ? new Date(data.acceptedCGUAt) : undefined;
+    user.acceptedPrivacyPolicy = data.acceptedCGU;
+    user.privacyPolicyAcceptedAt = data.acceptedCGU ? new Date(data.acceptedCGUAt) : undefined;
+    user.acceptedDataProcessing = data.acceptedCGU;
+    user.dataProcessingAcceptedAt = data.acceptedCGU ? new Date(data.acceptedCGUAt) : undefined;
+    user.role = UserRole.STORE_OWNER; // Upgrade to store owner
+    user.isFullyRegistered = true;
+
+    const savedUser = await this.userRepository.save(user);
+
+    // Create store
+    const store = this.storeRepository.create({
+      ownerId: userId,
+      name: data.storeName,
+      slug: createSlug(data.storeName),
+      legalAddress: data.storeAddress,
+      address: `${data.storeAddress.street}, ${data.storeAddress.postalCode} ${data.storeAddress.city}`,
+      phone: data.phoneNumber,
+      countrySpecificFields: {
+        siret: data.siret,
+      },
+      documentVerificationStatus: {
+        registrationCertificate: 'pending',
+        sirenCertificate: 'pending',
+        taxCertificate: 'pending',
+        identityDocument: 'pending',
+        proofOfAddress: 'pending',
+        bankDetails: 'pending',
+      },
+    });
+
+    const savedStore = await this.storeRepository.save(store);
+
+    logger.info(`OAuth user ${savedUser.email} completed onboarding with store: ${savedStore.name}`);
+
+    return {
+      user: {
+        id: savedUser.id,
+        email: savedUser.email,
+        firstName: savedUser.firstName,
+        lastName: savedUser.lastName,
+        role: savedUser.role,
+        type: savedUser.type,
+        isActive: savedUser.isActive,
+        isFullyRegistered: savedUser.isFullyRegistered,
+      },
+      store: {
+        id: savedStore.id,
+        name: savedStore.name,
+        isActive: savedStore.isActive,
+      },
+    };
+  }
+
+  async checkStoreNameAvailability(storeName: string): Promise<{ available: boolean; slug: string }> {
+    const slug = createSlug(storeName);
+
+    // Check if slug already exists
+    const existingStore = await this.storeRepository.findOne({
+      where: { slug },
+    });
+
+    return {
+      available: !existingStore,
+      slug,
+    };
   }
 }

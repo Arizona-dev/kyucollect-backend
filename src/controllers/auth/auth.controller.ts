@@ -393,7 +393,7 @@ export class AuthController {
 
         // Generate JWT token
         const token = await this.authService.generateToken(user);
-        
+
         // Redirect to frontend with token
         res.redirect(
           `${process.env.FRONTEND_URL}/auth/success?token=${token}&type=${user.role}`
@@ -405,5 +405,109 @@ export class AuthController {
         );
       }
     })(req, res, next);
+  }
+
+  async completeOnboarding(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.userId; // From auth middleware
+
+      if (!userId) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
+
+      const {
+        phoneNumber,
+        storeName,
+        siret,
+        storeAddress,
+        billingAddress,
+        acceptedCGU,
+        acceptedCGUAt,
+      } = req.body;
+
+      // Validate required fields
+      if (!phoneNumber || !storeName || !siret || !storeAddress || !acceptedCGU) {
+        res.status(400).json({ message: "Missing required fields" });
+        return;
+      }
+
+      const result = await this.authService.completeOnboarding(userId, {
+        phoneNumber,
+        storeName,
+        siret,
+        storeAddress,
+        billingAddress: billingAddress || storeAddress,
+        acceptedCGU,
+        acceptedCGUAt,
+      });
+
+      res.json({
+        message: "Onboarding completed successfully",
+        data: result,
+      });
+    } catch (error) {
+      logger.error("Complete onboarding error:", error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to complete onboarding",
+      });
+    }
+  }
+
+  async getCurrentUser(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.userId; // From auth middleware
+
+      if (!userId) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
+
+      const user = req.user;
+
+      res.json({
+        message: "User retrieved successfully",
+        data: {
+          id: user!.id,
+          email: user!.email,
+          firstName: user!.firstName,
+          lastName: user!.lastName,
+          role: user!.role,
+          type: user!.type,
+          isActive: user!.isActive,
+          isFullyRegistered: user!.isFullyRegistered,
+          // Check if user has completed onboarding (has SIRET)
+          siret: user!.countrySpecificFields?.siret,
+        },
+      });
+    } catch (error) {
+      logger.error("Get current user error:", error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to get user",
+      });
+    }
+  }
+
+  async checkStoreNameAvailability(req: Request, res: Response): Promise<void> {
+    try {
+      const { storeName } = req.query;
+
+      if (!storeName || typeof storeName !== "string") {
+        res.status(400).json({ message: "Store name is required" });
+        return;
+      }
+
+      const result = await this.authService.checkStoreNameAvailability(storeName);
+
+      res.json({
+        message: "Store name availability checked",
+        data: result,
+      });
+    } catch (error) {
+      logger.error("Check store name availability error:", error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to check availability",
+      });
+    }
   }
 }

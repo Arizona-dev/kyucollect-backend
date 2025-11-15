@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { AuthController } from "../../controllers/auth/auth.controller";
+import { authMiddleware } from "../../middlewares/auth.middleware";
 
 const router: Router = Router();
 const authController = new AuthController();
@@ -378,5 +379,121 @@ router.get("/apple", authController.appleOAuth.bind(authController));
  *         description: OAuth callback error
  */
 router.post("/apple/callback", authController.appleOAuthCallback.bind(authController));
+
+// User routes (protected)
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: Get current user
+ *     tags: [Authentication]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ */
+router.get("/me", authMiddleware, authController.getCurrentUser.bind(authController));
+
+/**
+ * @swagger
+ * /api/auth/complete-onboarding:
+ *   post:
+ *     summary: Complete onboarding for OAuth users
+ *     tags: [Authentication]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - phoneNumber
+ *               - storeName
+ *               - siret
+ *               - storeAddress
+ *               - acceptedCGU
+ *             properties:
+ *               phoneNumber:
+ *                 type: string
+ *               storeName:
+ *                 type: string
+ *               siret:
+ *                 type: string
+ *               storeAddress:
+ *                 type: object
+ *                 properties:
+ *                   street:
+ *                     type: string
+ *                   city:
+ *                     type: string
+ *                   postalCode:
+ *                     type: string
+ *                   country:
+ *                     type: string
+ *               billingAddress:
+ *                 type: object
+ *                 properties:
+ *                   street:
+ *                     type: string
+ *                   city:
+ *                     type: string
+ *                   postalCode:
+ *                     type: string
+ *                   country:
+ *                     type: string
+ *               acceptedCGU:
+ *                 type: boolean
+ *               acceptedCGUAt:
+ *                 type: string
+ *                 format: date-time
+ *     responses:
+ *       200:
+ *         description: Onboarding completed successfully
+ *       400:
+ *         description: Missing required fields
+ *       401:
+ *         description: Unauthorized
+ */
+router.post("/complete-onboarding", authMiddleware, authController.completeOnboarding.bind(authController));
+
+/**
+ * @swagger
+ * /api/auth/check-store-name:
+ *   get:
+ *     summary: Check if store name is available
+ *     tags: [Authentication]
+ *     parameters:
+ *       - in: query
+ *         name: storeName
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The store name to check
+ *     responses:
+ *       200:
+ *         description: Store name availability checked
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     available:
+ *                       type: boolean
+ *                     slug:
+ *                       type: string
+ *       400:
+ *         description: Missing store name
+ */
+router.get("/check-store-name", authController.checkStoreNameAvailability.bind(authController));
 
 export default router;

@@ -20,6 +20,7 @@ import storeRoutes from "./routes/stores/stores.routes";
 import menuRoutes from "./routes/menus/menus.routes";
 import orderRoutes from "./routes/orders/orders.routes";
 import paymentRoutes from "./routes/payments/payments.routes";
+import inseeRoutes from "./routes/insee/insee.routes";
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
@@ -67,6 +68,7 @@ app.use("/api/stores", storeRoutes);
 app.use("/api/menus", menuRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/insee", inseeRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

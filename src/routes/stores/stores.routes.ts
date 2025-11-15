@@ -40,6 +40,46 @@ router.get("/", storesController.getStores.bind(storesController));
 
 /**
  * @swagger
+ * /api/stores/slug/{slug}:
+ *   get:
+ *     summary: Get store by slug
+ *     tags: [Stores]
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Store slug (URL-friendly name)
+ *     responses:
+ *       200:
+ *         description: Store retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Store'
+ *       404:
+ *         description: Store not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get("/slug/:slug", storesController.getStoreBySlug.bind(storesController));
+
+/**
+ * @swagger
  * /api/stores/{id}:
  *   get:
  *     summary: Get store by ID
